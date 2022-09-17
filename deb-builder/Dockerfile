@@ -6,7 +6,9 @@ RUN apt update && \
   git wget build-essential librtlsdr-dev libsndfile1-dev libliquid-dev libfftw3-dev \
   libconfig++-dev qtmultimedia5-dev libqt5svg5-dev libqcustomplot-dev libczmq-dev \
   gir1.2-gst-plugins-bad-1.0 libmariadb-dev libpq-dev libfbclient2 freetds-dev \
-  qt5-qmake cmake libglib2.0-dev imagemagick file
+  qt5-qmake cmake libglib2.0-dev imagemagick file libqt5multimedia5-plugins \
+  libglfw3-dev libvolk2-dev libiio-dev libad9361-dev librtaudio-dev libzstd-dev \
+  libhackrf-dev
 
 WORKDIR /root
 RUN git clone https://github.com/pothosware/SoapySDR && \
@@ -104,7 +106,6 @@ RUN git clone https://github.com/jontio/libaeroambe && \
   make -j $(nproc) && \
   make install
 
-
 WORKDIR /root
 RUN git clone https://github.com/jontio/JFFT && \
   git clone https://github.com/jontio/JAERO && \
@@ -126,6 +127,26 @@ RUN git clone https://github.com/jeroenbeijer/SDRReceiver && \
   make install
 
 WORKDIR /root
+RUN git clone https://github.com/airspy/airspyone_host.git && \
+  cd airspyone_host && \
+  mkdir build && \
+  cd build && \
+  cmake ../ -DCMAKE_INSTALL_PREFIX=/usr && \
+  make -j $(nproc) && \
+  make install
+
+WORKDIR /root
+RUN git clone https://github.com/AlexandreRouma/SDRPlusPlus && \
+  cd SDRPlusPlus && \
+  mkdir build && \
+  cd build && \
+  cmake ../ -DCMAKE_INSTALL_PREFIX=/usr && \
+  make -j $(nproc) && \
+  make install && \
+  sed -i 's/\/usr\/bin\/sdrpp/sdrpp/g' /usr/share/applications/sdrpp.desktop && \
+  sed -i 's/\/usr\/share\/sdrpp\/icons\/sdrpp.png/sdrpp/g' /usr/share/applications/sdrpp.desktop
+
+WORKDIR /root
 RUN wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage && \
   wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage && \
   mkdir bin && \
@@ -137,17 +158,23 @@ RUN wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
 WORKDIR /root
 RUN touch acarsdec.svg && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir acarsdecAppDir -e /usr/bin/acarsdec --create-desktop-file -i acarsdec.svg --output appimage
+
 RUN touch dumpvdl2.svg && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumpvdl2AppDir -e /usr/bin/dumpvdl2 --create-desktop-file -i dumpvdl2.svg --output appimage
+
 RUN touch dumphfdl.svg && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumphfdlAppDir -e /usr/bin/dumphfdl --create-desktop-file -i dumphfdl.svg --output appimage
+
 RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir -e /opt/jaero/JAERO -d /usr/share/applications/JAERO.desktop -i /opt/jaero/jaero.png --output appimage && \
   /root/bin/linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir -e /opt/jaero/JAERO -d /usr/share/applications/JAERO.desktop -i /opt/jaero/jaero.png --output appimage
+
 RUN touch SDRReceiver.svg && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir -e /usr/bin/SDRReceiver --create-desktop-file -i SDRReceiver.svg --output appimage && \
   /root/bin/linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir -e /usr/bin/SDRReceiver --create-desktop-file -i SDRReceiver.svg --output appimage
+
+RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir -e /usr/bin/sdrpp -d /usr/share/applications/sdrpp.desktop -i /usr/share/sdrpp/icons/sdrpp.png --output appimage
 
 WORKDIR /
 COPY common/entrypoint.sh /
