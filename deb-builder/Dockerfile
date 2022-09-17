@@ -203,13 +203,22 @@ RUN touch SDRReceiver.svg && \
   -i SDRReceiver.svg \
   --output appimage
 
-RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir \
+RUN mkdir sdrppAppDir && \
+  mkdir -p sdrppAppDir/usr/lib && \
+  cp -r /usr/lib/sdrpp sdrppAppDir/usr/lib && \
+  mkdir -p sdrppAppDir/usr/share && \
+  cp -r /usr/share/sdrpp sdrppAppDir/usr/share && \
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir \
   -e /usr/bin/sdrpp \
   -d /usr/share/applications/sdrpp.desktop \
   -i /usr/share/sdrpp/icons/sdrpp.png \
   --output appimage && \
-  cp -r /usr/lib/sdrpp sdrppAppDir/usr/lib && \
-  cp -r /usr/share/sdrpp sdrppAppDir/usr/share && \
+  cp sdrppAppDir/usr/lib/libairspy.so.0 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
+  cp sdrppAppDir/usr/lib/libairspyhf.so.0 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
+  cp sdrppAppDir/usr/lib/librtlsdr.so.0 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
+  cp sdrppAppDir/usr/lib/libSoapySDR.so.0.8-2 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
+  cp sdrppAppDir/usr/lib/libhackrf.so.0 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
+  cp sdrppAppDir/usr/lib/librtaudio.so.6 sdrppAppDir/usr/lib/sdrpp/plugins/ && \
   linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir \
   -e /usr/bin/sdrpp \
   -d /usr/share/applications/sdrpp.desktop \
