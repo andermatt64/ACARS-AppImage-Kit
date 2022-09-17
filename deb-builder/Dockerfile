@@ -136,7 +136,7 @@ RUN git clone https://github.com/airspy/airspyone_host.git && \
   make install
 
 WORKDIR /root
-RUN git clone https://github.com/AlexandreRouma/SDRPlusPlus && \
+RUN git clone https://github.com/andermatt64/SDRPlusPlus && \
   cd SDRPlusPlus && \
   mkdir build && \
   cd build && \
@@ -157,24 +157,64 @@ RUN wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous
 
 WORKDIR /root
 RUN touch acarsdec.svg && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir acarsdecAppDir -e /usr/bin/acarsdec --create-desktop-file -i acarsdec.svg --output appimage
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir acarsdecAppDir \
+  -e /usr/bin/acarsdec \
+  --create-desktop-file \
+  -i acarsdec.svg \
+  --output appimage
 
 RUN touch dumpvdl2.svg && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumpvdl2AppDir -e /usr/bin/dumpvdl2 --create-desktop-file -i dumpvdl2.svg --output appimage
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumpvdl2AppDir \
+  -e /usr/bin/dumpvdl2 \
+  --create-desktop-file \
+  -i dumpvdl2.svg \
+  --output appimage
 
 RUN touch dumphfdl.svg && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumphfdlAppDir -e /usr/bin/dumphfdl --create-desktop-file -i dumphfdl.svg --output appimage
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir dumphfdlAppDir \
+  -e /usr/bin/dumphfdl \
+  --create-desktop-file \
+  -i dumphfdl.svg \
+  --output appimage
 
-RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir -e /opt/jaero/JAERO -d /usr/share/applications/JAERO.desktop -i /opt/jaero/jaero.png --output appimage && \
+RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir \
+  -e /opt/jaero/JAERO \
+  -d /usr/share/applications/JAERO.desktop \
+  -i /opt/jaero/jaero.png \
+  --output appimage && \
   /root/bin/linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir -e /opt/jaero/JAERO -d /usr/share/applications/JAERO.desktop -i /opt/jaero/jaero.png --output appimage
+  cp /usr/lib/libaeroambe.so.1.0.0 jaeroAppDir/usr/bin/libaeroambe.so && \
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir jaeroAppDir \
+  -e /opt/jaero/JAERO \
+  -d /usr/share/applications/JAERO.desktop \
+  -i /opt/jaero/jaero.png \
+  --output appimage
 
 RUN touch SDRReceiver.svg && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir -e /usr/bin/SDRReceiver --create-desktop-file -i SDRReceiver.svg --output appimage && \
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir \
+  -e /usr/bin/SDRReceiver \
+  --create-desktop-file \
+  -i SDRReceiver.svg \
+  --output appimage && \
   /root/bin/linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir && \
-  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir -e /usr/bin/SDRReceiver --create-desktop-file -i SDRReceiver.svg --output appimage
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrRecvAppDir \
+  -e /usr/bin/SDRReceiver \
+  --create-desktop-file \
+  -i SDRReceiver.svg \
+  --output appimage
 
-RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir -e /usr/bin/sdrpp -d /usr/share/applications/sdrpp.desktop -i /usr/share/sdrpp/icons/sdrpp.png --output appimage
+RUN linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir \
+  -e /usr/bin/sdrpp \
+  -d /usr/share/applications/sdrpp.desktop \
+  -i /usr/share/sdrpp/icons/sdrpp.png \
+  --output appimage && \
+  cp -r /usr/lib/sdrpp sdrppAppDir/usr/lib && \
+  cp -r /usr/share/sdrpp sdrppAppDir/usr/share && \
+  linuxdeploy-x86_64.AppImage --appimage-extract-and-run --appdir sdrppAppDir \
+  -e /usr/bin/sdrpp \
+  -d /usr/share/applications/sdrpp.desktop \
+  -i /usr/share/sdrpp/icons/sdrpp.png \
+  --output appimage
 
 WORKDIR /
 COPY common/entrypoint.sh /
